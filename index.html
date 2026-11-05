@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#06060c">
-<meta name="description" content="K DEBET — Tactical Game Vault & Packet Tracer Archive.">
+<meta name="theme-color" content="#05050a">
+<meta name="description" content="K DEBET — Tactical Secret Archive. Nhập code để mở khóa vật phẩm.">
 <title>K DEBET — TACTICAL VAULT</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,17 +12,17 @@
 
 <style>
 :root{
-  --bg: #06060c;
-  --panel: rgba(13, 13, 24, 0.78);
-  --ink: #f1edff;
+  --bg: #05050a;
+  --panel: rgba(13, 13, 24, 0.82);
+  --ink: #f2eeff;
   --muted: #8b87a8;
   --gold: #f5c451;
   --gold-glow: rgba(245, 196, 81, 0.45);
   --cyan: #4ef2d2;
-  --cyan-glow: rgba(78, 242, 210, 0.4);
-  --crimson: #ff3366;
-  --border-light: rgba(245, 196, 81, 0.18);
-  --border-cyan: rgba(78, 242, 210, 0.28);
+  --cyan-glow: rgba(78, 242, 210, 0.45);
+  --crimson: #ff3860;
+  --border-gold: rgba(245, 196, 81, 0.22);
+  --border-cyan: rgba(78, 242, 210, 0.25);
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -33,13 +33,13 @@ body{
   background:var(--bg);
   font-family:'Rajdhani', sans-serif;
   overflow-x:hidden;
-  position:relative;
   display:flex;
   flex-direction:column;
   justify-content:space-between;
+  position:relative;
 }
 
-/* Background canvas & dynamic cosmic ether */
+/* Background layer */
 #bg-canvas, #particles-canvas{
   position:fixed;
   inset:0;
@@ -50,52 +50,66 @@ body{
 #bg-canvas{z-index:-2}
 #particles-canvas{z-index:-1}
 
-/* Dark atmospheric vignette & scanlines */
 .ambient-fog{
   position:fixed;
   inset:0;
   pointer-events:none;
   background:
-    radial-gradient(circle at 50% 30%, rgba(94, 43, 219, 0.12), transparent 60%),
-    radial-gradient(circle at 80% 80%, rgba(245, 196, 81, 0.08), transparent 50%),
-    radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(3, 3, 7, 0.88) 100%);
+    radial-gradient(circle at 60% 25%, rgba(100, 48, 230, 0.15), transparent 60%),
+    radial-gradient(circle at 20% 80%, rgba(245, 196, 81, 0.08), transparent 50%),
+    radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(2, 2, 5, 0.92) 100%);
   z-index:0;
 }
 .scanlines{
   position:fixed;
   inset:0;
   pointer-events:none;
-  background:linear-gradient(rgba(18, 16, 38, 0) 50%, rgba(0, 0, 0, 0.35) 50%);
+  background:linear-gradient(rgba(18, 16, 38, 0) 50%, rgba(0, 0, 0, 0.4) 50%);
   background-size:100% 4px;
   opacity:0.25;
   z-index:9;
 }
 
-/* Mystic lightning / flash flicker on ambient background */
+/* Flash chớp ma mị huyền bí */
 .mystic-flash{
   position:fixed;
   inset:0;
-  background:radial-gradient(circle at 60% 40%, rgba(200, 240, 255, 0.09), transparent 70%);
+  background:radial-gradient(circle at 50% 40%, rgba(220, 245, 255, 0.12), transparent 75%);
   pointer-events:none;
   z-index:1;
   opacity:0;
-  animation:mysticThunder 14s infinite ease-in-out;
+  animation:mysticThunder 16s infinite ease-in-out;
 }
 @keyframes mysticThunder{
-  0%, 82%, 86%, 100%{ opacity:0; }
-  83%{ opacity:0.6; }
-  84%{ opacity:0.1; }
-  85%{ opacity:0.8; }
+  0%, 84%, 88%, 100%{ opacity:0; }
+  85%{ opacity:0.75; }
+  86%{ opacity:0.1; }
+  87%{ opacity:0.95; }
 }
 
-/* Container responsive standard */
+/* Flash bùng nổ khi mở khóa thành công */
+#unlock-burst{
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle at center, rgba(78, 242, 210, 0.45), rgba(245, 196, 81, 0.25), transparent 70%);
+  z-index:99;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 0.6s ease-out;
+}
+#unlock-burst.active{
+  opacity:1;
+  transition:opacity 0.04s ease-in;
+}
+
+/* App container */
 .app-shell{
   position:relative;
   z-index:2;
   width:100%;
   max-width:1440px;
   margin:0 auto;
-  padding:20px 36px 30px;
+  padding:22px 36px 28px;
   min-height:100vh;
   display:flex;
   flex-direction:column;
@@ -108,12 +122,12 @@ header{
   align-items:center;
   justify-content:space-between;
   padding:16px 28px;
-  background:rgba(12, 11, 24, 0.65);
-  border:1px solid var(--border-light);
+  background:rgba(12, 11, 24, 0.72);
+  border:1px solid var(--border-gold);
   border-left:3px solid var(--gold);
-  backdrop-filter:blur(16px);
+  backdrop-filter:blur(18px);
   clip-path:polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
-  box-shadow:0 8px 32px rgba(0,0,0,0.45);
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);
 }
 .logo-grp{
   display:flex;
@@ -129,13 +143,12 @@ header{
   clip-path:polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
   display:grid;
   place-items:center;
-  box-shadow:0 0 15px var(--gold-glow);
-  position:relative;
+  box-shadow:0 0 16px var(--gold-glow);
   animation:pulseHex 4s infinite alternate;
 }
 @keyframes pulseHex{
   from{box-shadow:0 0 10px rgba(245, 196, 81, 0.3);}
-  to{box-shadow:0 0 24px rgba(245, 196, 81, 0.7);}
+  to{box-shadow:0 0 26px rgba(245, 196, 81, 0.75);}
 }
 .hex-badge svg{
   width:22px;
@@ -162,7 +175,7 @@ header{
 .header-meta{
   display:flex;
   align-items:center;
-  gap:24px;
+  gap:20px;
   font-family:'Share Tech Mono', monospace;
   font-size:11px;
   color:var(--muted);
@@ -175,13 +188,17 @@ header{
   border:1px solid rgba(255,255,255,0.08);
   background:rgba(255,255,255,0.02);
 }
-.dot-live{
+.dot-status{
   width:8px;
   height:8px;
   border-radius:50%;
+  background:var(--gold);
+  box-shadow:0 0 10px var(--gold);
+  animation:blink 1.8s infinite;
+}
+body.unlocked .dot-status{
   background:var(--cyan);
   box-shadow:0 0 10px var(--cyan);
-  animation:blink 1.8s infinite;
 }
 @keyframes blink{0%,100%{opacity:1} 50%{opacity:0.35}}
 
@@ -189,18 +206,18 @@ header{
 main{
   flex:1;
   display:grid;
-  grid-template-columns:1.05fr 0.95fr;
+  grid-template-columns:1.08fr 0.92fr;
   align-items:center;
-  gap:52px;
+  gap:50px;
   padding:36px 0;
   width:100%;
 }
 
-/* Left panel: Info & Item list */
+/* Left Tactical Display */
 .tactical-display{
   display:flex;
   flex-direction:column;
-  gap:22px;
+  gap:20px;
 }
 .glitch-tag{
   display:inline-flex;
@@ -214,7 +231,7 @@ main{
 }
 .glitch-tag::before{
   content:'';
-  width:28px;
+  width:26px;
   height:2px;
   background:var(--cyan);
   box-shadow:0 0 8px var(--cyan);
@@ -253,7 +270,6 @@ main{
   width:100%;
   max-width:440px;
   margin-top:-6px;
-  margin-bottom:4px;
   border-radius:2px;
   overflow:hidden;
 }
@@ -264,22 +280,145 @@ main{
 .c-covert{background:#eb4b4b}
 .c-rare{background:linear-gradient(90deg, #ffd700, #ff7b00);box-shadow:0 0 12px #ffb300}
 
-/* Weapon/Item Box Download cards */
-.items-vault{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:16px;
+/* INTERACTIVE CONSOLE FOR CODE INPUT */
+.console-box{
+  position:relative;
+  padding:24px;
+  background:linear-gradient(135deg, rgba(16, 14, 28, 0.9), rgba(8, 7, 16, 0.95));
+  border:1px solid var(--border-gold);
+  clip-path:polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  box-shadow:0 12px 40px rgba(0,0,0,0.6);
+  backdrop-filter:blur(14px);
   margin-top:6px;
 }
+.console-box::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  width:80px;
+  height:2px;
+  background:var(--gold);
+  box-shadow:0 0 10px var(--gold);
+}
+.console-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:16px;
+  font-family:'Share Tech Mono', monospace;
+  font-size:11px;
+  color:var(--gold);
+  letter-spacing:0.18em;
+}
+.console-head .status-stamp{
+  color:var(--muted);
+  font-size:10px;
+}
+.input-row{
+  display:flex;
+  gap:12px;
+  position:relative;
+}
+.input-wrap{
+  flex:1;
+  position:relative;
+  display:flex;
+  align-items:center;
+  background:rgba(4, 4, 10, 0.85);
+  border:1px solid rgba(245, 196, 81, 0.3);
+  transition:all 0.3s ease;
+}
+.input-wrap:focus-within{
+  border-color:var(--gold);
+  box-shadow:0 0 20px rgba(245, 196, 81, 0.25);
+}
+.input-wrap svg{
+  width:18px;
+  height:18px;
+  margin-left:14px;
+  stroke:var(--gold);
+  flex-shrink:0;
+}
+.input-wrap input{
+  width:100%;
+  background:transparent;
+  border:0;
+  outline:0;
+  padding:14px 16px;
+  color:#fff;
+  font-family:'Share Tech Mono', monospace;
+  font-size:15px;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+}
+.input-wrap input::placeholder{
+  color:#5d5975;
+  letter-spacing:0.08em;
+}
+.unlock-btn{
+  padding:0 24px;
+  background:linear-gradient(135deg, var(--gold), #d49f2b);
+  border:0;
+  color:#06060c;
+  font-family:'Cinzel', serif;
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:0.15em;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  clip-path:polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  transition:all 0.25s ease;
+  box-shadow:0 0 20px rgba(245, 196, 81, 0.3);
+}
+.unlock-btn:hover{
+  background:#fff;
+  box-shadow:0 0 30px var(--gold-glow);
+  transform:translateY(-2px);
+}
+.err-hint{
+  font-family:'Share Tech Mono', monospace;
+  font-size:11px;
+  color:var(--crimson);
+  margin-top:10px;
+  min-height:18px;
+  letter-spacing:0.06em;
+}
+.shake{
+  animation:shakeBox 0.4s ease;
+}
+@keyframes shakeBox{
+  0%, 100%{transform:translateX(0);}
+  20%, 60%{transform:translateX(-6px);}
+  40%, 80%{transform:translateX(6px);}
+}
+
+/* UNLOCKED VAULT ITEMS */
+.vault-unlocked{
+  display:none;
+  flex-direction:column;
+  gap:16px;
+  margin-top:6px;
+  animation:fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(15px);}
+  to{opacity:1;transform:translateY(0);}
+}
+body.unlocked .console-box{display:none;}
+body.unlocked .vault-unlocked{display:flex;}
+
 .item-slot{
   position:relative;
   display:flex;
   align-items:center;
   justify-content:space-between;
   padding:20px 24px;
-  background:linear-gradient(135deg, rgba(16, 15, 32, 0.88), rgba(9, 8, 18, 0.95));
-  border:1px solid rgba(245, 196, 81, 0.16);
-  border-left:4px solid var(--gold);
+  background:linear-gradient(135deg, rgba(16, 15, 32, 0.9), rgba(9, 8, 18, 0.98));
+  border:1px solid rgba(78, 242, 210, 0.25);
+  border-left:4px solid var(--cyan);
   clip-path:polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
   transition:all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   text-decoration:none;
@@ -290,18 +429,16 @@ main{
   content:'';
   position:absolute;
   inset:0;
-  background:radial-gradient(circle at 10% 50%, rgba(245, 196, 81, 0.1), transparent 60%);
+  background:radial-gradient(circle at 10% 50%, rgba(78, 242, 210, 0.12), transparent 60%);
   opacity:0;
   transition:opacity 0.4s ease;
 }
 .item-slot:hover{
-  border-color:var(--gold);
+  border-color:var(--cyan);
   transform:translateX(8px) translateY(-2px);
-  box-shadow:0 14px 40px rgba(245, 196, 81, 0.22);
+  box-shadow:0 14px 40px rgba(78, 242, 210, 0.28);
 }
-.item-slot:hover::before{
-  opacity:1;
-}
+.item-slot:hover::before{opacity:1;}
 .slot-meta{
   display:flex;
   align-items:center;
@@ -312,8 +449,8 @@ main{
 .item-icon-wrap{
   width:52px;
   height:52px;
-  background:rgba(245, 196, 81, 0.08);
-  border:1px solid rgba(245, 196, 81, 0.3);
+  background:rgba(78, 242, 210, 0.08);
+  border:1px solid rgba(78, 242, 210, 0.3);
   clip-path:polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
   display:grid;
   place-items:center;
@@ -322,14 +459,14 @@ main{
 }
 .item-slot:hover .item-icon-wrap{
   transform:scale(1.1) rotate(6deg);
-  border-color:var(--gold);
-  background:rgba(245, 196, 81, 0.18);
+  border-color:var(--cyan);
+  background:rgba(78, 242, 210, 0.2);
 }
 .item-icon-wrap svg{
   width:26px;
   height:26px;
   fill:none;
-  stroke:var(--gold);
+  stroke:var(--cyan);
   stroke-width:1.8;
 }
 .item-info h3{
@@ -346,9 +483,9 @@ main{
   font-family:'Share Tech Mono', monospace;
   font-size:10px;
   padding:2px 8px;
-  background:rgba(245, 196, 81, 0.12);
-  border:1px solid var(--gold);
-  color:var(--gold);
+  background:rgba(78, 242, 210, 0.12);
+  border:1px solid var(--cyan);
+  color:var(--cyan);
   letter-spacing:0.12em;
 }
 .item-info p{
@@ -356,17 +493,16 @@ main{
   font-size:12px;
   color:var(--muted);
   margin-top:4px;
-  letter-spacing:0.04em;
 }
 .download-action{
   position:relative;
   z-index:2;
   display:flex;
   align-items:center;
-  gap:12px;
+  gap:10px;
   padding:10px 20px;
-  background:linear-gradient(135deg, rgba(245, 196, 81, 0.15), rgba(245, 196, 81, 0.04));
-  border:1px solid var(--gold);
+  background:linear-gradient(135deg, rgba(78, 242, 210, 0.15), rgba(78, 242, 210, 0.04));
+  border:1px solid var(--cyan);
   color:#fff;
   font-family:'Share Tech Mono', monospace;
   font-size:12px;
@@ -375,10 +511,10 @@ main{
   transition:all 0.25s ease;
 }
 .item-slot:hover .download-action{
-  background:var(--gold);
-  color:#070710;
+  background:var(--cyan);
+  color:#06060c;
   font-weight:700;
-  box-shadow:0 0 20px var(--gold-glow);
+  box-shadow:0 0 24px var(--cyan-glow);
 }
 .download-action svg{
   width:16px;
@@ -386,7 +522,7 @@ main{
   stroke-width:2.2;
 }
 
-/* Right Stage: Mystical Dark Soul / 3D Holographic Artifact */
+/* Right Mystical 3D Relic Stage */
 .artifact-stage{
   position:relative;
   width:100%;
@@ -427,7 +563,7 @@ main{
   50%{transform:scale(1.03);box-shadow:0 0 70px rgba(245, 196, 81, 0.35), inset 0 0 60px rgba(78, 242, 210, 0.25);}
 }
 
-/* Mystical Core Gem */
+/* Core Gem */
 .relic-core{
   position:relative;
   width:64%;
@@ -441,7 +577,11 @@ main{
   align-items:center;
   justify-content:center;
   overflow:hidden;
-  transition:transform 0.4s ease;
+  transition:transform 0.4s ease, border-color 0.8s ease, box-shadow 0.8s ease;
+}
+body.unlocked .relic-core{
+  border-color:var(--cyan);
+  box-shadow:0 0 70px rgba(78, 242, 210, 0.35), inset 0 0 50px rgba(78, 242, 210, 0.25);
 }
 .relic-core::after{
   content:'';
@@ -458,6 +598,10 @@ main{
   z-index:3;
   filter:drop-shadow(0 0 16px var(--gold)) drop-shadow(0 0 35px var(--gold-glow));
   animation:relicFloat 4s ease-in-out infinite;
+  transition:filter 0.5s ease;
+}
+body.unlocked .relic-svg{
+  filter:drop-shadow(0 0 16px var(--cyan)) drop-shadow(0 0 35px var(--cyan-glow));
 }
 @keyframes relicFloat{
   0%,100%{transform:translateY(0) rotate(0deg);}
@@ -474,6 +618,10 @@ main{
   margin-top:12px;
   text-shadow:0 0 14px var(--gold-glow);
 }
+body.unlocked .relic-meta-tag{
+  color:var(--cyan);
+  text-shadow:0 0 14px var(--cyan-glow);
+}
 .relic-sub-tag{
   position:relative;
   z-index:3;
@@ -485,7 +633,7 @@ main{
   opacity:0.8;
 }
 
-/* Mystical Runes around stage */
+/* Runes */
 .rune{
   position:absolute;
   font-family:'Cinzel', serif;
@@ -499,7 +647,6 @@ main{
 .rn-bottom{bottom:2%;left:50%;transform:translateX(-50%)}
 .rn-left{top:50%;left:2%;transform:translateY(-50%)}
 
-/* Radar cross lines */
 .cross-v{
   position:absolute;
   width:1px;
@@ -517,13 +664,13 @@ main{
   pointer-events:none;
 }
 
-/* Footer & Direct Domain Link info */
+/* Footer */
 footer{
   display:flex;
   align-items:center;
   justify-content:space-between;
   padding:16px 24px;
-  background:rgba(9, 8, 18, 0.6);
+  background:rgba(9, 8, 18, 0.65);
   border-top:1px solid rgba(255, 255, 255, 0.06);
   font-family:'Share Tech Mono', monospace;
   font-size:11px;
@@ -540,15 +687,7 @@ footer{
   color:var(--cyan);
   font-weight:600;
 }
-.domain-badge a{
-  color:inherit;
-  text-decoration:none;
-}
-.domain-badge a:hover{
-  text-decoration:underline;
-}
 
-/* Responsive adjustments */
 @media(max-width:1100px){
   main{
     grid-template-columns:1fr;
@@ -562,14 +701,15 @@ footer{
     align-items:center;
   }
   .sub-desc{margin:0 auto}
-  .items-vault{width:100%}
-  .item-slot{text-align:left}
+  .console-box, .vault-unlocked{width:100%;text-align:left;}
   .artifact-stage{max-width:420px}
 }
 @media(max-width:640px){
   .app-shell{padding:14px 16px}
   header{flex-direction:column;gap:12px;align-items:flex-start}
   .header-meta{width:100%;justify-content:space-between}
+  .input-row{flex-direction:column}
+  .unlock-btn{height:46px;justify-content:center}
   .item-slot{flex-direction:column;align-items:flex-start;gap:16px}
   .download-action{width:100%;justify-content:center}
   footer{flex-direction:column;gap:12px;text-align:center}
@@ -578,6 +718,7 @@ footer{
 </head>
 <body>
 
+<div id="unlock-burst"></div>
 <div class="ambient-fog"></div>
 <div class="mystic-flash"></div>
 <div class="scanlines"></div>
@@ -593,13 +734,13 @@ footer{
       </div>
       <div class="brand-txt">
         <h1>K DEBET</h1>
-        <span>TACTICAL REPOSITORY · NO CIPHER REQUIRED</span>
+        <span>TACTICAL REPOSITORY · GITHUB PAGES HOSTED</span>
       </div>
     </a>
     <div class="header-meta">
       <div class="stat-pill">
-        <span class="dot-live"></span>
-        <span>GITHUB PAGES HOSTED</span>
+        <span class="dot-status"></span>
+        <span id="top-status">VAULT SEALED</span>
       </div>
       <div class="stat-pill">
         <span>SECTOR: 07-DEBET</span>
@@ -610,7 +751,7 @@ footer{
   <!-- Main Content -->
   <main>
     <section class="tactical-display">
-      <div class="glitch-tag">UNRESTRICTED ACCESS · DIRECT DOWNLOAD</div>
+      <div class="glitch-tag" id="access-tag">SECURITY CLEARANCE · CIPHER REQUIRED</div>
       <h2 class="hero-title">K <em>DEBET.</em></h2>
       
       <div class="cs-rarity-rack" title="CS:GO Grade Quality">
@@ -621,13 +762,34 @@ footer{
         <span class="c-rare"></span>
       </div>
 
-      <p class="sub-desc">
-        Kho lưu trữ tệp cấu hình <strong>Cisco Packet Tracer</strong> trực tiếp từ kho GitHub Repository. 
-        Không cần qua trung gian Vercel, không bị mã hóa mã khóa, sẵn sàng tải ngay về máy.
+      <p class="sub-desc" id="hero-desc">
+        Hai vật phẩm số đang được khóa niêm phong trong kho dữ liệu. 
+        <strong>Nhập mật mã truy cập</strong> hợp lệ để giải phóng và tải trực tiếp các tệp Cisco Packet Tracer.
       </p>
 
-      <!-- Direct Item download cards -->
-      <div class="items-vault">
+      <!-- PHASE 1: FORM NHẬP CODE -->
+      <div class="console-box" id="consoleBox">
+        <div class="console-head">
+          <span>⟡ PHASE 01 : AUTHENTICATION</span>
+          <span class="status-stamp">[ LOCKED ]</span>
+        </div>
+        <form id="codeForm" autocomplete="off">
+          <div class="input-row">
+            <div class="input-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="10" rx="2"/><circle cx="12" cy="16" r="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+              <input type="text" id="passInput" placeholder="NHẬP MÃ CODE..." spellcheck="false" required>
+            </div>
+            <button class="unlock-btn" type="submit">
+              <span>MỞ KHÓA</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+          <div class="err-hint" id="errHint"></div>
+        </form>
+      </div>
+
+      <!-- PHASE 2: VAULT ĐÃ MỞ (TẢI FILE GỐC .PKT TRỰC TIẾP TỪ REPO) -->
+      <div class="vault-unlocked" id="vaultUnlocked">
         <!-- Item 1 -->
         <a class="item-slot" href="./Cau1.pkt" download="Cau1.pkt">
           <div class="slot-meta">
@@ -686,8 +848,8 @@ footer{
           <line x1="16" y1="50" x2="84" y2="50" stroke="#f5c451" stroke-dasharray="3 3"/>
           <polygon points="50,30 68,50 50,70 32,50" stroke="#fff" stroke-width="1.5" opacity="0.8"/>
         </svg>
-        <div class="relic-meta-tag">K DEBET RELIC</div>
-        <div class="relic-sub-tag">DIRECT LINK ONLINE</div>
+        <div class="relic-meta-tag" id="relicStatus">SEALED</div>
+        <div class="relic-sub-tag" id="relicSub">AWAITING CIPHER</div>
       </div>
     </section>
   </main>
@@ -696,13 +858,100 @@ footer{
   <footer>
     <div>© 2026 K DEBET · ARCHIVE EDITION</div>
     <div class="domain-badge">
-      <span>DOMAIN READY: TRỎ CNAME HOẶC A RECORD VỀ REPO GITHUB PAGES</span>
+      <span>GITHUB PAGES COMPATIBLE · NO VERCEL NEEDED</span>
     </div>
   </footer>
 </div>
 
 <script>
-// Mystical Dark Glow & Cosmic Dust particle engine
+// Danh sách mã băm SHA-256 các code hợp lệ
+// Hỗ trợ cả các mã cũ và các mã thông dụng:
+const VALID_HASHES = [
+  "f60d560f99debac1a1fb49ba8f40bca379a33304db2275ed56d20e7c5cf43345",
+  "72a7658268cecfd12a537fb1d1c1e0ea0c680da53bbe2712f5e80927529c7fce",
+  "fe62672526cbd2e4777aa14bc5883bbcb9e0c488bc6bb8ab5524399069a96242",
+  "87527209b8e1e048a5808279570f249b4df7c53622adf8ecab3e408934d9f89e",
+  "8c21520bfbab3acf8374a003b576e9469957b2952b4471730df85a0c7814cda8",
+  "1cc86895475389788b21e9ac7c10356a5c4b2adae6aa0a604ad879f8c3ff99da",
+  "5ef14541525769ca67fc116bd5ef02e081c5564f1ae478e67e12e5e7181ecc44",
+  "6fe8d4856d0ddb7701b37162c83ce2ddc685f44c1bdc357838d1d25db67474c4",
+  // Hỗ trợ thêm các mã trực tiếp quen thuộc:
+  // "KDEBET"
+  "8b50df366b57493010b910e54d39f4082729e846059c9918731ad2b322a364a2",
+  // "KIENDEBET"
+  "0811b51829e557252fc2be2ba5a5d84d5df685c2b667e411b9ce60982df87d55",
+  // "123456"
+  "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
+];
+
+// SHA-256 calculator
+async function sha256(text) {
+  const enc = new TextEncoder();
+  const data = enc.encode(text);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Logic mở khóa
+const codeForm = document.getElementById('codeForm');
+const passInput = document.getElementById('passInput');
+const errHint = document.getElementById('errHint');
+const consoleBox = document.getElementById('consoleBox');
+const unlockBurst = document.getElementById('unlock-burst');
+
+codeForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const rawCode = passInput.value.trim().toUpperCase().replace(/[\u2012\u2013\u2014]/g, '-').replace(/\s+/g, '');
+  if (!rawCode) {
+    showError("VUI LÒNG NHẬP MÃ CODE.");
+    return;
+  }
+
+  errHint.textContent = "ĐANG XÁC THỰC...";
+  errHint.style.color = "var(--cyan)";
+
+  try {
+    const hash = await sha256(rawCode);
+    const isMatched = VALID_HASHES.includes(hash);
+
+    if (isMatched) {
+      triggerUnlockSuccess();
+    } else {
+      showError("MÃ CODE KHÔNG HỢP LỆ. TRUY CẬP BỊ TỪ CHỐI.");
+    }
+  } catch(err) {
+    showError("LỖI XÁC THỰC. HÃY THỬ LẠI.");
+  }
+});
+
+function showError(msg) {
+  errHint.textContent = msg;
+  errHint.style.color = "var(--crimson)";
+  consoleBox.classList.remove('shake');
+  void consoleBox.offsetWidth;
+  consoleBox.classList.add('shake');
+  passInput.focus();
+}
+
+function triggerUnlockSuccess() {
+  // Bùng nổ ánh sáng ma mị
+  unlockBurst.classList.add('active');
+  setTimeout(() => unlockBurst.classList.remove('active'), 650);
+
+  // Cập nhật trạng thái giao diện
+  document.body.classList.add('unlocked');
+  document.getElementById('top-status').textContent = 'ACCESS GRANTED';
+  document.getElementById('access-tag').textContent = 'SECURITY CLEARED · ARCHIVE UNSEALED';
+  document.getElementById('hero-desc').innerHTML = 'Cánh cổng đã mở. <strong>Nhấn tải trực tiếp</strong> các tệp Cisco Packet Tracer bên dưới.';
+  document.getElementById('relicStatus').textContent = 'UNSEALED';
+  document.getElementById('relicSub').textContent = 'ITEMS ONLINE';
+
+  // Hiển thị hiệu ứng pháo hoa bụi ma thuật
+  burstParticles();
+}
+
+// Particle Engine & Lightning
 (function(){
   const canvas = document.getElementById('particles-canvas');
   const ctx = canvas.getContext('2d');
@@ -721,7 +970,7 @@ footer{
 
   function createParticles(){
     particles = [];
-    const count = Math.floor((w * h) / 10000);
+    const count = Math.floor((w * h) / 11000);
     for(let i = 0; i < count; i++){
       particles.push({
         x: Math.random() * w,
@@ -735,6 +984,21 @@ footer{
       });
     }
   }
+
+  window.burstParticles = function() {
+    for(let i = 0; i < 80; i++){
+      particles.push({
+        x: w / 2,
+        y: h / 2,
+        size: Math.random() * 3.5 + 1,
+        speedY: (Math.random() - 0.5) * 8,
+        speedX: (Math.random() - 0.5) * 8,
+        alpha: 1,
+        decay: 0.015,
+        color: Math.random() > 0.5 ? '#4ef2d2' : '#f5c451'
+      });
+    }
+  };
 
   function draw(){
     ctx.clearRect(0, 0, w, h);
@@ -768,8 +1032,8 @@ footer{
   const relic = document.getElementById('relicCore');
   window.addEventListener('mousemove', (e) => {
     if(!relic) return;
-    const x = (e.clientX / window.innerWidth - 0.5) * 24;
-    const y = (e.clientY / window.innerHeight - 0.5) * 24;
+    const x = (e.clientX / window.innerWidth - 0.5) * 22;
+    const y = (e.clientY / window.innerHeight - 0.5) * 22;
     relic.style.transform = `perspective(800px) rotateY(${x}deg) rotateX(${-y}deg) scale(1.02)`;
   });
 })();
