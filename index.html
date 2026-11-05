@@ -1,0 +1,1387 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="description" content="K DEBET — Encrypted Game Archive. Unlock your files with a cipher key.">
+<title>K DEBET — ENCRYPTED VAULT</title>
+<style>
+/* ============================
+   BASE TOKENS — CS:GO SKIN PALETTE
+   ============================ */
+:root{
+  --bg:#08080f;
+  --panel:#0f0f1a;
+  --ink:#f0ede8;
+  --muted:#8a8577;
+  --gold:#e8b84b;
+  --gold2:#ffd97d;
+  --gold-dim:#a07c2a;
+  --red:#e84b4b;
+  --green:#4bda96;
+  --green2:#7bffbe;
+  --orange:#e8864b;
+  --blue:#4b9fe8;
+  --line:rgba(232,184,75,.13);
+  --line2:rgba(75,218,150,.12);
+  --x:0px;--y:0px;
+  --case-border:#c9933655;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:clip}
+body{margin:0;min-height:100svh;color:var(--ink);background:var(--bg);font-family:'Rajdhani',Inter,'Segoe UI',Arial,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:wait}a{color:inherit}
+::selection{background:#c89c35;color:#000}
+[hidden]{display:none!important}
+
+/* ============================
+   GOOGLE FONT IMPORT (Rajdhani)
+   ============================ */
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
+
+/* ============================
+   STARFIELD CANVAS
+   ============================ */
+#starfield{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+
+/* ============================
+   BACKGROUND — DARK MILITARY
+   ============================ */
+.world{
+  position:fixed;inset:0;z-index:-2;pointer-events:none;overflow:hidden;
+  background:
+    radial-gradient(ellipse 60% 50% at 70% 40%,rgba(80,60,10,.22),transparent 75%),
+    radial-gradient(ellipse 50% 70% at 15% 80%,rgba(10,50,25,.14),transparent 70%),
+    linear-gradient(135deg,#06060d,#0d0c18 55%,#070a0a);
+}
+.world::before{
+  content:"";position:absolute;inset:-20%;
+  background:conic-gradient(from 100deg at 60% 50%,transparent 0 30%,rgba(180,130,20,.08) 40%,transparent 50% 70%,rgba(20,110,60,.06) 80%,transparent 90%);
+  filter:blur(60px);animation:skyturn 50s linear infinite
+}
+.world::after{
+  content:"";position:absolute;inset:0;opacity:.14;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.2'/%3E%3C/svg%3E");
+  mix-blend-mode:overlay
+}
+
+/* Scanlines */
+.scanlines{position:fixed;inset:0;z-index:7;opacity:.12;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.18) 4px 5px)}
+
+/* Corner decorations */
+.corner{position:fixed;width:60px;height:60px;pointer-events:none;z-index:6}
+.corner::before,.corner::after{content:"";position:absolute;background:var(--gold);opacity:.35}
+.corner::before{width:1px;height:40px}
+.corner::after{width:40px;height:1px}
+.c-tl{top:14px;left:14px}.c-tl::before{top:0;left:0}.c-tl::after{top:0;left:0}
+.c-tr{top:14px;right:14px}.c-tr::before{top:0;right:0}.c-tr::after{top:0;right:0}
+.c-bl{bottom:14px;left:14px}.c-bl::before{bottom:0;left:0}.c-bl::after{bottom:0;left:0}
+.c-br{bottom:14px;right:14px}.c-br::before{bottom:0;right:0}.c-br::after{bottom:0;right:0}
+
+/* ============================
+   LAYOUT
+   ============================ */
+.wrap{width:min(1340px,calc(100% - 96px));margin:auto;position:relative}
+
+/* ============================
+   HEADER
+   ============================ */
+header{
+  height:88px;display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid rgba(232,184,75,.14);position:relative;z-index:3
+}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none}
+
+/* K logo — hexagonal game badge */
+.mark{
+  position:relative;width:44px;height:44px;display:grid;place-items:center;
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  background:linear-gradient(135deg,#2a1f00,#4a3200);
+  border:0;
+  box-shadow:0 0 20px #e8b84b33;
+  transition:box-shadow .3s
+}
+.mark::before{
+  content:"";position:absolute;inset:2px;
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  background:linear-gradient(135deg,#c89c35,#ffd97d 40%,#a07c2a);
+  opacity:.15
+}
+.mark svg{width:22px;height:22px;z-index:1}
+.brand:hover .mark{box-shadow:0 0 32px #e8b84b66}
+
+.brand-names{display:flex;flex-direction:column;gap:2px}
+.brand-name{
+  letter-spacing:.28em;font-size:20px;font-weight:700;
+  font-family:'Rajdhani',Inter,sans-serif;
+  color:var(--gold2);
+  text-shadow:0 0 20px #e8b84b44
+}
+.brand-sub{font-size:9px;letter-spacing:.4em;color:var(--gold-dim);font-family:Consolas,monospace}
+
+.head-right{
+  display:flex;gap:28px;align-items:center;
+  font-family:Consolas,"Courier New",monospace;font-size:11px;letter-spacing:.16em;color:#7a7265
+}
+.online{display:flex;align-items:center;gap:10px}
+.led{
+  height:7px;width:7px;background:var(--gold);border-radius:50%;
+  box-shadow:0 0 10px var(--gold),0 0 22px #e8b84b88;
+  animation:blink 2.4s ease-in-out infinite
+}
+.head-right b{font-weight:600;color:var(--gold)}
+
+/* ============================
+   MAIN GRID
+   ============================ */
+main{
+  position:relative;min-height:calc(100svh - 148px);
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  align-items:center;gap:48px;padding:48px 0 48px;z-index:2
+}
+
+/* ============================
+   COPY (LEFT)
+   ============================ */
+.copy{position:relative;z-index:5;max-width:600px}
+.eyebrow{
+  display:flex;align-items:center;gap:14px;
+  color:var(--gold-dim);font:600 10px Consolas,monospace;letter-spacing:.32em;
+  margin:0 0 26px;text-transform:uppercase
+}
+.eyebrow::before{content:"";display:block;width:38px;height:1px;background:linear-gradient(90deg,var(--gold),transparent)}
+.eyebrow-badge{
+  display:inline-flex;align-items:center;padding:3px 9px;
+  border:1px solid rgba(232,184,75,.3);background:rgba(232,184,75,.06);
+  color:var(--gold);font:600 9px Consolas,monospace;letter-spacing:.22em
+}
+
+h1{
+  font-family:'Rajdhani',Georgia,sans-serif;
+  font-weight:700;letter-spacing:.04em;
+  font-size:clamp(60px,5.5vw,92px);line-height:.95;
+  margin:0 0 22px
+}
+h1 .light{display:block;color:#ede8e0;letter-spacing:.06em}
+h1 .accent{
+  display:block;font-weight:700;
+  background:linear-gradient(100deg,var(--gold2) 0%,#e8b84b 40%,var(--orange) 80%);
+  color:transparent;background-clip:text;-webkit-background-clip:text;
+  text-shadow:none;letter-spacing:.05em
+}
+
+/* Rarity stripe */
+.rarity-bar{
+  display:flex;align-items:center;gap:0;margin:0 0 20px;height:3px;width:100%;max-width:340px;
+  border-radius:0;overflow:hidden
+}
+.rarity-bar span{flex:1;height:100%}
+.rb-common{background:#aaa}
+.rb-uncommon{background:#4b9fe8}
+.rb-rare{background:#a259e8}
+.rb-epic{background:#e84b8c}
+.rb-legendary{background:linear-gradient(90deg,var(--gold),var(--orange));box-shadow:0 0 10px #e8b84b88}
+
+.intro{color:#7a7265;font-size:15px;line-height:1.85;max-width:490px;margin:0 0 24px;font-family:'Rajdhani',sans-serif;font-weight:500}
+.intro strong{color:#c9b888;font-weight:700}
+
+.meta{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:28px}
+.pill{
+  padding:9px 13px;border:1px solid rgba(232,184,75,.15);
+  background:rgba(20,16,6,.7);
+  font:600 10px Consolas,monospace;letter-spacing:.12em;color:#8a7a52
+}
+.pill .glyph{color:var(--gold);margin-right:7px}
+
+/* ============================
+   CONSOLE / CASE PANEL
+   ============================ */
+.console{
+  position:relative;max-width:520px;padding:28px;
+  background:linear-gradient(150deg,rgba(20,16,8,.96),rgba(8,8,15,.97));
+  border:1px solid rgba(232,184,75,.22);
+  box-shadow:0 0 0 1px rgba(232,184,75,.06),0 16px 70px rgba(0,0,0,.55),inset 0 1px rgba(255,255,255,.04);
+  backdrop-filter:blur(22px);overflow:hidden;
+  clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px))
+}
+.console::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  border-top:1px solid rgba(232,184,75,.28);
+  background:linear-gradient(110deg,rgba(232,184,75,.06),transparent 40%)
+}
+.console::after{
+  content:"";position:absolute;width:120px;height:1px;right:0;top:0;
+  background:linear-gradient(90deg,transparent,var(--gold));
+  box-shadow:0 0 18px var(--gold)
+}
+
+/* Case condition badge at top-right */
+.console-condition{
+  position:absolute;top:12px;right:16px;
+  font:700 9px Consolas,monospace;letter-spacing:.22em;
+  color:var(--gold);border:1px solid rgba(232,184,75,.3);padding:3px 9px;
+  background:rgba(232,184,75,.06);text-transform:uppercase
+}
+
+.console-head{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  margin-bottom:20px;color:var(--gold);letter-spacing:.18em;
+  font:700 10px Consolas,monospace
+}
+.stamp{font-size:10px;color:var(--gold-dim);letter-spacing:.07em}
+
+label{display:block;font:700 10px Consolas,monospace;letter-spacing:.22em;color:#8a7a52;margin-bottom:10px;text-transform:uppercase}
+
+.inputline{
+  position:relative;display:flex;align-items:center;gap:10px;height:60px;
+  border:1px solid rgba(232,184,75,.22);
+  background:rgba(5,5,10,.8);
+  transition:border-color .25s,box-shadow .25s;padding:0 16px
+}
+.inputline:focus-within{border-color:var(--gold);box-shadow:0 0 28px rgba(232,184,75,.14),inset 0 0 10px rgba(232,184,75,.04)}
+.inputline svg{width:17px;color:var(--gold-dim);flex:none}
+.inputline input{
+  background:transparent;border:0;outline:none;width:100%;
+  color:var(--gold2);letter-spacing:.18em;
+  font:700 clamp(12px,1.3vw,15px) Consolas,monospace;text-transform:uppercase
+}
+.inputline input::placeholder{color:#4a4232;letter-spacing:.1em;font-weight:400}
+
+/* Auth Button — CS:GO open case style */
+.auth-btn{
+  position:relative;display:flex;width:100%;align-items:center;justify-content:space-between;
+  gap:10px;border:0;min-height:58px;margin-top:14px;padding:0 20px 0 24px;
+  background:linear-gradient(100deg,#c89c35,#a07828 50%,#8a6520);
+  box-shadow:0 0 0 1px rgba(232,184,75,.4),0 8px 32px rgba(200,156,53,.3);
+  color:#0a0a0f;font:700 12px Consolas,monospace;letter-spacing:.22em;
+  text-transform:uppercase;
+  transition:transform .2s,box-shadow .2s,filter .2s;overflow:hidden;
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px))
+}
+.auth-btn::before{
+  content:"";position:absolute;width:80px;height:200%;top:-50%;left:-120px;
+  transform:rotate(28deg);background:rgba(255,255,255,.25);filter:blur(14px);
+  transition:left .55s
+}
+.auth-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 0 0 1px rgba(232,184,75,.6),0 12px 40px rgba(200,156,53,.5);filter:brightness(1.1)}
+.auth-btn:hover::before{left:130%}
+.auth-btn:active{transform:translateY(0)}
+.auth-btn svg{width:18px;height:18px;stroke-width:2;stroke:#0a0a0f}
+.auth-btn .btn-txt{font-family:'Rajdhani',sans-serif;font-size:14px;letter-spacing:.18em}
+
+.console-foot{
+  margin:14px 0 0;display:flex;gap:9px;align-items:center;
+  color:#4a4232;font:10px Consolas,monospace;line-height:1.65
+}
+.console-foot .lock{color:var(--gold-dim)}
+.message{min-height:0;margin:10px 0 0;font:700 11px Consolas,monospace;color:var(--red);line-height:1.55;letter-spacing:.08em}
+.message:empty{display:none}
+.console.shake{animation:shake .4s ease}
+
+/* ============================
+   VAULT (UNLOCKED FILES)
+   ============================ */
+.vault-header{margin:0 0 18px}
+.vault-title{font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;letter-spacing:.06em;margin:0 0 6px;color:var(--green2);text-transform:uppercase}
+.vault-caption{font-size:12px;color:#4a7a5f;line-height:1.6;margin:0 0 16px;font-family:Consolas,monospace;letter-spacing:.08em}
+
+.file-list{display:grid;gap:10px}
+.file-card{
+  width:100%;display:flex;gap:14px;align-items:center;text-align:left;
+  padding:0;border:0;background:transparent;overflow:hidden;
+  transition:transform .2s;cursor:pointer
+}
+.file-card:hover{transform:translateX(4px)}
+.file-card:disabled{opacity:.6;transform:none}
+
+/* Case-style file item */
+.file-inner{
+  display:flex;gap:14px;align-items:center;width:100%;
+  padding:14px 16px;
+  border:1px solid rgba(75,218,150,.2);
+  background:linear-gradient(135deg,rgba(10,25,16,.9),rgba(5,15,10,.95));
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));
+  transition:border-color .2s,background .2s,box-shadow .2s
+}
+.file-card:hover .file-inner{border-color:rgba(75,218,150,.5);background:linear-gradient(135deg,rgba(15,40,24,.95),rgba(8,22,14,.98));box-shadow:0 0 20px rgba(75,218,150,.1),inset 0 0 10px rgba(75,218,150,.03)}
+.file-card:disabled .file-inner{border-color:rgba(75,218,150,.08)}
+
+.file-icon{
+  display:grid;place-items:center;width:46px;height:46px;flex-shrink:0;
+  background:rgba(75,218,150,.08);border:1px solid rgba(75,218,150,.25);
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)
+}
+.file-icon svg{width:20px;height:20px}
+.file-text{min-width:0;flex:1}
+.file-text strong{display:block;font:700 14px 'Rajdhani',sans-serif;letter-spacing:.08em;white-space:nowrap;color:var(--green2);text-transform:uppercase}
+.file-text small{display:block;color:#3a6a4f;font:600 10px Consolas,monospace;margin-top:4px;letter-spacing:.1em}
+.file-rarity{
+  font:700 9px Consolas,monospace;letter-spacing:.18em;
+  padding:2px 8px;background:rgba(75,218,150,.1);border:1px solid rgba(75,218,150,.3);
+  color:var(--green);white-space:nowrap;margin-right:4px
+}
+.file-arrow{color:var(--green);flex-shrink:0}
+
+.ok-message{min-height:17px;margin:14px 0 0;font:700 11px Consolas,monospace;color:var(--green);line-height:1.5;letter-spacing:.1em}
+
+/* Download progress bar */
+.dl-bar{height:2px;background:rgba(75,218,150,.12);margin:12px 0 0;overflow:hidden}
+.dl-bar-fill{height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--green2));transition:width .4s;box-shadow:0 0 8px var(--green)}
+
+/* ============================
+   STAGE (RIGHT) — ITEM DISPLAY
+   ============================ */
+.stage{
+  position:relative;isolation:isolate;min-height:620px;
+  display:grid;place-items:center;
+  transform:translate3d(calc(var(--x)*.12),calc(var(--y)*.12),0);
+  transition:transform .45s ease-out
+}
+
+/* Ambient glow */
+.stage::before{
+  content:"";position:absolute;width:min(700px,110%);aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle,rgba(200,156,53,.1) 0 12%,rgba(200,100,30,.06) 28%,rgba(10,50,25,.05) 50%,transparent 70%);
+  filter:blur(12px);animation:breathe 8s ease-in-out infinite
+}
+.stage::after{
+  content:"";position:absolute;width:90%;height:40%;bottom:3%;
+  background:radial-gradient(ellipse,rgba(200,156,53,.12),transparent 70%);
+  filter:blur(32px);transform:perspective(400px) rotateX(70deg);z-index:-1
+}
+
+.ghost{
+  position:absolute;z-index:0;width:70%;height:400px;top:12%;
+  background:linear-gradient(90deg,transparent,rgba(200,156,53,.05),transparent);
+  filter:blur(45px);transform:rotate(-22deg);animation:ghost 10s ease-in-out infinite alternate
+}
+
+/* Portal / Case */
+.portal{
+  position:relative;width:min(500px,100%);aspect-ratio:1;
+  display:grid;place-items:center;
+  filter:drop-shadow(0 0 32px rgba(200,156,53,.18))
+}
+
+/* Rotating rings */
+.halo{
+  position:absolute;border-radius:50%;inset:1%;
+  border:1px solid rgba(232,184,75,.2);
+  box-shadow:0 0 30px rgba(232,184,75,.06),inset 0 0 40px rgba(232,184,75,.04);
+  animation:orbit 55s linear infinite
+}
+.halo::before,.halo::after{
+  content:"";position:absolute;width:5px;height:5px;
+  background:var(--gold);border-radius:50%;box-shadow:0 0 10px var(--gold),0 0 24px #e8b84bbb
+}
+.halo::before{top:9%;left:18%}
+.halo::after{right:7%;bottom:19%;width:3px;height:3px;background:var(--orange)}
+
+.halo-two{inset:9%;border-style:dashed;border-color:rgba(232,184,75,.14);animation-direction:reverse;animation-duration:32s}
+.halo-three{inset:16%;border:1px solid rgba(200,156,53,.2);border-left-color:transparent;border-right-color:transparent;animation-duration:21s}
+
+/* Tick marks — like a crosshair */
+.ticks{
+  position:absolute;inset:4%;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,rgba(232,184,75,.4) 0deg .3deg,transparent .3deg 10deg);
+  mask:radial-gradient(transparent 0 46%,black 47% 48%,transparent 49%);
+  -webkit-mask:radial-gradient(transparent 0 46%,black 47% 48%,transparent 49%);
+  opacity:.4;animation:orbit 100s linear infinite reverse
+}
+
+/* Arc sweeps */
+.arc{
+  position:absolute;inset:20%;border-radius:50%;
+  background:conic-gradient(from -130deg,transparent 0deg,rgba(200,156,53,.08) 48deg,rgba(232,184,75,.75) 64deg,rgba(200,120,30,.35) 79deg,transparent 120deg 180deg,rgba(200,156,53,.15) 206deg,rgba(255,220,100,.7) 224deg,transparent 255deg);
+  mask:radial-gradient(transparent 0 77%,black 79% 83%,transparent 86%);
+  -webkit-mask:radial-gradient(transparent 0 77%,black 79% 83%,transparent 86%);
+  filter:drop-shadow(0 0 10px var(--gold));animation:orbit 15s linear infinite
+}
+.arc-back{inset:14%;opacity:.35;animation-duration:25s;animation-direction:reverse}
+
+/* Core — the item showcase */
+.core{
+  position:absolute;inset:25%;border-radius:50%;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:hidden;
+  background:radial-gradient(circle at 55% 48%,rgba(50,35,5,.8),rgba(10,8,2,.9) 50%,rgba(5,5,10,.95) 80%);
+  box-shadow:inset 0 0 40px rgba(200,156,53,.2),0 0 50px rgba(200,156,53,.12),0 0 100px rgba(200,80,10,.06);
+  border:1px solid rgba(232,184,75,.3);transition:box-shadow 1.2s,border-color 1s
+}
+.core::before{
+  content:"";position:absolute;inset:-30%;
+  background:conic-gradient(from 50deg,rgba(200,156,53,.08),transparent 25%,rgba(232,184,75,.12) 36%,transparent 56%,rgba(180,100,20,.1) 78%,transparent);
+  animation:orbit 20s linear infinite
+}
+.core::after{content:"";position:absolute;inset:12%;border:1px solid rgba(232,184,75,.1);border-radius:50%;box-shadow:0 0 25px rgba(232,184,75,.08)}
+
+/* Item SVG inside core — CS:GO weapon-like */
+.core-svg{
+  width:48%;height:48%;z-index:2;
+  filter:drop-shadow(0 0 18px rgba(232,184,75,.6)) drop-shadow(0 2px 8px rgba(0,0,0,.8));
+  animation:levitate 5s ease-in-out infinite
+}
+.core-label{position:relative;z-index:2;font:700 11px Consolas,monospace;color:var(--gold);letter-spacing:.34em;margin-top:14px;text-shadow:0 0 16px rgba(232,184,75,.6);text-transform:uppercase}
+.core-small{position:relative;z-index:2;font:600 8px Consolas,monospace;color:var(--gold-dim);letter-spacing:.24em;margin-top:7px;text-transform:uppercase}
+
+/* Item quality indicators (like CS:GO wear) */
+.wear-bar{
+  position:relative;z-index:2;width:60%;height:4px;margin-top:12px;
+  background:linear-gradient(90deg,#4bda96,#e8b84b,#e86b4b,#e84b4b);
+  border-radius:0;overflow:visible
+}
+.wear-indicator{
+  position:absolute;top:-3px;width:3px;height:10px;background:#fff;
+  box-shadow:0 0 6px #fff;transform:translateX(-50%);
+  animation:wear-move 3s ease-in-out infinite alternate;
+  left:30%
+}
+
+/* Rune decorations */
+.rune{position:absolute;z-index:4;font-family:Consolas,monospace;color:var(--gold);opacity:.5;text-shadow:0 0 14px rgba(232,184,75,.8);font-size:14px;letter-spacing:.05em}
+.r1{top:3%;left:47%}.r2{right:0%;top:48%}.r3{bottom:3%;left:47%}.r4{left:1%;top:48%}
+
+.orbit-label{position:absolute;z-index:5;font:600 10px Consolas,monospace;letter-spacing:.16em;color:#5a5040;line-height:1.7;text-transform:uppercase}
+.orb-a{top:14%;right:-2%;text-align:right}
+.orb-b{bottom:16%;left:-3%}
+.orbit-label strong{display:block;color:var(--gold-dim);font-weight:700}
+.orb-a::before,.orb-b::before{content:"";display:block;height:1px;width:50px;background:rgba(232,184,75,.3);margin-bottom:8px}
+.orb-a::before{margin-left:auto}
+
+.column{position:absolute;z-index:-1;width:1px;height:80%;background:linear-gradient(transparent,rgba(232,184,75,.08),transparent);top:10%;left:50%}
+.cross{position:absolute;z-index:-1;width:80%;height:1px;background:linear-gradient(90deg,transparent,rgba(232,184,75,.08),transparent);left:10%;top:50%}
+
+/* Crosshair overlay on portal */
+.crosshair{
+  position:absolute;z-index:5;inset:40%;
+  pointer-events:none;opacity:.18
+}
+.crosshair::before,.crosshair::after{content:"";position:absolute;background:var(--gold)}
+.crosshair::before{width:1px;height:100%;left:50%;transform:translateX(-50%)}
+.crosshair::after{height:1px;width:100%;top:50%;transform:translateY(-50%)}
+
+.stage-bottom{
+  position:absolute;bottom:17px;display:flex;gap:22px;align-items:center;
+  color:#4a4030;font:600 10px Consolas,monospace;letter-spacing:.18em;text-transform:uppercase
+}
+.bars{display:flex;gap:3px;align-items:flex-end;height:14px}
+.bars i{display:block;width:2px;height:7px;background:var(--gold-dim);animation:bar 1.2s ease-in-out infinite alternate}
+.bars i:nth-child(2){height:14px;animation-delay:.1s}
+.bars i:nth-child(3){height:10px;animation-delay:.3s}
+.bars i:nth-child(4){height:5px;animation-delay:.2s}
+.bars i:nth-child(5){height:12px;animation-delay:.4s}
+
+/* ============================
+   FOOTER
+   ============================ */
+footer{
+  position:relative;z-index:3;min-height:58px;border-top:1px solid rgba(232,184,75,.1);
+  display:flex;justify-content:space-between;align-items:center;gap:18px;
+  font:600 10px Consolas,monospace;letter-spacing:.16em;color:#4a4030;text-transform:uppercase
+}
+.footer-right{color:#5a5040}
+.teal{color:var(--gold)}
+
+/* ============================
+   UNLOCKED STATE
+   ============================ */
+body.unlocked .core{
+  border-color:rgba(75,218,150,.5);
+  box-shadow:inset 0 0 50px rgba(75,218,150,.2),0 0 60px rgba(75,218,150,.18),0 0 120px rgba(40,180,100,.08)
+}
+body.unlocked .core::before{background:conic-gradient(rgba(75,218,150,.12),transparent,rgba(100,255,180,.2),transparent)}
+body.unlocked .core-svg{filter:drop-shadow(0 0 20px rgba(75,218,150,.7)) drop-shadow(0 2px 8px rgba(0,0,0,.8))}
+body.unlocked .arc{filter:hue-rotate(100deg) drop-shadow(0 0 10px var(--green))}
+body.unlocked .core-label{color:var(--green2);text-shadow:0 0 16px rgba(75,218,150,.6)}
+body.unlocked .led{background:var(--green);box-shadow:0 0 10px var(--green),0 0 22px rgba(75,218,150,.8)}
+body.unlocked .console{border-color:rgba(75,218,150,.35)}
+body.unlocked .halo{border-color:rgba(75,218,150,.25)}
+body.unlocked .stage::after{background:radial-gradient(ellipse,rgba(75,218,150,.14),transparent 70%)}
+body.unlocked .wear-indicator{left:72%;background:var(--green);box-shadow:0 0 8px var(--green)}
+
+/* ============================
+   GLITCH TEXT EFFECT
+   ============================ */
+.glitch{position:relative;display:inline-block}
+.glitch::before,.glitch::after{
+  content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;
+  background:transparent
+}
+.glitch::before{
+  color:var(--orange);clip-path:polygon(0 0,100% 0,100% 35%,0 35%);
+  animation:glitch-top 4s infinite linear alternate-reverse;
+  transform:translate(-2px,0)
+}
+.glitch::after{
+  color:var(--blue);clip-path:polygon(0 65%,100% 65%,100% 100%,0 100%);
+  animation:glitch-bot 3.5s infinite linear alternate;
+  transform:translate(2px,0)
+}
+
+/* ============================
+   ANIMATIONS
+   ============================ */
+@keyframes orbit{to{transform:rotate(360deg)}}
+@keyframes skyturn{to{transform:rotate(360deg)}}
+@keyframes breathe{0%,100%{opacity:.6;transform:scale(.93)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes ghost{from{transform:translate(-10%,5%) rotate(-22deg);opacity:.4}to{transform:translate(14%,-6%) rotate(-22deg);opacity:.9}}
+@keyframes levitate{0%,100%{transform:translateY(3px) rotate(0deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+@keyframes blink{50%{opacity:.25}}
+@keyframes bar{to{height:3px;opacity:.35}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}50%{transform:translateX(7px)}75%{transform:translateX(-5px)}}
+@keyframes wear-move{from{left:28%}to{left:38%}}
+@keyframes glitch-top{
+  0%,90%{transform:translate(-2px,0);clip-path:polygon(0 0,100% 0,100% 35%,0 35%)}
+  92%{transform:translate(2px,0);clip-path:polygon(0 5%,100% 5%,100% 30%,0 30%)}
+  94%{transform:translate(-1px,0);clip-path:polygon(0 0,100% 0,100% 35%,0 35%)}
+  96%{transform:translate(3px,0)}
+  100%{transform:translate(-2px,0)}
+}
+@keyframes glitch-bot{
+  0%,88%{transform:translate(2px,0);clip-path:polygon(0 65%,100% 65%,100% 100%,0 100%)}
+  90%{transform:translate(-2px,0);clip-path:polygon(0 70%,100% 70%,100% 95%,0 95%)}
+  92%{transform:translate(1px,0)}
+  94%{transform:translate(-3px,0);clip-path:polygon(0 65%,100% 65%,100% 100%,0 100%)}
+  100%{transform:translate(2px,0)}
+}
+@keyframes scan-pulse{0%,100%{opacity:.12}50%{opacity:.22}}
+
+/* ============================
+   UNLOCK SUCCESS SEQUENCE
+   ============================ */
+
+/* Flash overlay on unlock */
+#unlock-flash{
+  position:fixed;inset:0;z-index:9999;pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(75,218,150,.35) 0%,rgba(75,218,150,.08) 50%,transparent 70%);
+  opacity:0;transition:opacity .05s
+}
+#unlock-flash.fire{opacity:1;transition:opacity .05s}
+#unlock-flash.fade{opacity:0;transition:opacity .9s ease-out}
+
+/* Scan line sweep on unlock */
+#unlock-sweep{
+  position:fixed;inset:0;z-index:9998;pointer-events:none;overflow:hidden;opacity:0
+}
+#unlock-sweep::after{
+  content:"";position:absolute;left:0;right:0;height:3px;top:-4px;
+  background:linear-gradient(90deg,transparent,var(--green2),var(--green),transparent);
+  box-shadow:0 0 20px var(--green2),0 0 40px var(--green);
+  animation:none
+}
+#unlock-sweep.fire{opacity:1}
+#unlock-sweep.fire::after{animation:sweep-down .7s cubic-bezier(.4,0,.2,1) forwards}
+
+/* Confetti canvas */
+#confetti-canvas{
+  position:fixed;inset:0;z-index:9997;pointer-events:none;
+  width:100%;height:100%;opacity:0;transition:opacity .2s
+}
+#confetti-canvas.active{opacity:1}
+
+/* Toast notification */
+#toast{
+  position:fixed;bottom:28px;right:28px;z-index:10000;
+  display:flex;align-items:center;gap:12px;
+  padding:14px 20px;min-width:260px;max-width:380px;
+  background:linear-gradient(135deg,rgba(8,20,12,.98),rgba(5,12,8,.99));
+  border:1px solid rgba(75,218,150,.4);
+  box-shadow:0 0 0 1px rgba(75,218,150,.08),0 20px 60px rgba(0,0,0,.7),0 0 30px rgba(75,218,150,.12);
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));
+  transform:translateY(120%) scale(.92);
+  transition:transform .45s cubic-bezier(.34,1.56,.64,1),opacity .35s;
+  opacity:0;pointer-events:none
+}
+#toast.show{transform:translateY(0) scale(1);opacity:1;pointer-events:auto}
+#toast.hide{transform:translateY(80%) scale(.95);opacity:0;transition:transform .3s ease-in,opacity .25s}
+.toast-icon{
+  width:36px;height:36px;flex-shrink:0;display:grid;place-items:center;
+  background:rgba(75,218,150,.12);border:1px solid rgba(75,218,150,.35);
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)
+}
+.toast-icon svg{width:16px;height:16px;stroke:var(--green2);stroke-width:2}
+.toast-body{flex:1;min-width:0}
+.toast-title{font:700 12px 'Rajdhani',sans-serif;letter-spacing:.12em;color:var(--green2);margin:0 0 3px;text-transform:uppercase}
+.toast-sub{font:600 10px Consolas,monospace;color:#4a7a5f;letter-spacing:.06em}
+.toast-close{
+  width:20px;height:20px;display:grid;place-items:center;
+  background:transparent;border:0;cursor:pointer;color:#4a7a5f;flex-shrink:0;
+  transition:color .2s
+}
+.toast-close:hover{color:var(--green)}
+/* Toast progress bar */
+.toast-bar{
+  position:absolute;bottom:0;left:0;height:2px;width:100%;
+  background:rgba(75,218,150,.12)
+}
+.toast-bar-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--green2));width:100%;transition:width linear}
+
+/* Download toast variant */
+#dl-toast{border-color:rgba(75,218,150,.35)}
+#dl-toast .toast-icon{background:rgba(75,218,150,.08)}
+
+/* Tooltip */
+[data-tip]{position:relative}
+[data-tip]::after{
+  content:attr(data-tip);position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%) translateY(4px);
+  background:rgba(10,10,18,.98);border:1px solid rgba(232,184,75,.2);
+  color:var(--gold);font:600 10px Consolas,monospace;letter-spacing:.12em;
+  padding:6px 12px;white-space:nowrap;pointer-events:none;
+  opacity:0;transition:opacity .18s,transform .18s;z-index:100;text-transform:uppercase
+}
+[data-tip]:hover::after{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Focus visible ring — GitHub style */
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* Keyboard shortcut badge */
+.kbd-hint{
+  display:inline-flex;align-items:center;gap:5px;
+  font:600 9px Consolas,monospace;color:#4a4232;letter-spacing:.08em;
+  margin-top:10px
+}
+.kbd{
+  display:inline-block;padding:2px 6px;
+  background:rgba(232,184,75,.06);border:1px solid rgba(232,184,75,.2);
+  border-bottom:2px solid rgba(232,184,75,.3);
+  color:var(--gold-dim);font:700 9px Consolas,monospace;letter-spacing:.05em
+}
+
+/* Page entrance animation */
+@keyframes fade-up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.copy{animation:fade-up .7s cubic-bezier(.22,1,.36,1) both}
+.stage{animation:fade-up .9s .15s cubic-bezier(.22,1,.36,1) both}
+header{animation:fade-up .5s cubic-bezier(.22,1,.36,1) both}
+
+/* Vault reveal animation */
+#vault{animation:none}
+#vault.reveal{animation:vault-reveal .6s cubic-bezier(.22,1,.36,1) both}
+@keyframes vault-reveal{
+  from{opacity:0;transform:translateY(10px) scale(.98)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* File card stagger on vault open */
+.file-card{opacity:0;transform:translateX(-12px);transition:opacity .4s,transform .4s,border-color .2s;}
+.file-card.visible{opacity:1;transform:translateX(0)}
+.file-card:hover{transform:translateX(4px)}
+.file-card:disabled{opacity:.6;transform:none}
+
+/* Input typing indicator — caret pulse */
+.inputline input{caret-color:var(--gold);caret-shape:block}
+
+/* Auth button loading state */
+.auth-btn.loading .btn-txt::after{
+  content:" ·";animation:dots 1s steps(3,end) infinite
+}
+@keyframes dots{0%{content:" ·"}33%{content:" ··"}66%{content:" ···"}100%{content:" ·"}}
+
+/* Unlock ripple on core */
+.core.unlocking{animation:core-pulse .6s ease-out}
+@keyframes core-pulse{
+  0%{box-shadow:inset 0 0 40px rgba(75,218,150,.2),0 0 50px rgba(75,218,150,.12),0 0 0 0 rgba(75,218,150,.4)}
+  50%{box-shadow:inset 0 0 60px rgba(75,218,150,.4),0 0 80px rgba(75,218,150,.4),0 0 0 40px rgba(75,218,150,0)}
+  100%{box-shadow:inset 0 0 50px rgba(75,218,150,.2),0 0 60px rgba(75,218,150,.18),0 0 120px rgba(40,180,100,.08)}
+}
+
+/* Typewriter effect */
+.typewriter{overflow:hidden;border-right:2px solid var(--green);white-space:nowrap;animation:type-cursor .6s step-end infinite}
+@keyframes type-cursor{from,to{border-color:transparent}50%{border-color:var(--green)}}
+
+/* Sweep down keyframe */
+@keyframes sweep-down{
+  from{top:-4px}
+  to{top:calc(100% + 4px)}
+}
+
+/* ============================
+   RESPONSIVE
+   ============================ */
+@media(max-width:1000px){
+  .wrap{width:min(100% - 48px,860px)}
+  main{grid-template-columns:1fr;padding-top:50px;gap:0}
+  .copy{max-width:660px;margin:auto;text-align:center}
+  .eyebrow{justify-content:center}
+  .rarity-bar{margin-left:auto;margin-right:auto}
+  .intro{margin-left:auto;margin-right:auto}
+  .meta{justify-content:center}
+  .console{text-align:left;margin:auto}
+  .stage{min-height:470px;margin-top:0}
+  .portal{width:min(460px,100%)}
+  .orb-a{right:3%}.orb-b{left:3%}
+  .stage-bottom{bottom:0}
+  h1{font-size:clamp(56px,9vw,78px)}
+}
+@media(max-width:600px){
+  .wrap{width:calc(100% - 34px)}
+  header{height:70px}
+  .brand-name{font-size:16px;letter-spacing:.16em}
+  .brand-sub{font-size:8px;letter-spacing:.18em}
+  .mark{width:36px;height:36px}
+  .brand{gap:12px}
+  .head-right{font-size:9px;letter-spacing:.06em}
+  .head-right .hide-sm{display:none}
+  main{padding:38px 0 24px}
+  h1{font-size:clamp(44px,13vw,66px);margin-bottom:18px}
+  .eyebrow{margin-bottom:20px;font-size:9px}
+  .intro{font-size:14px;line-height:1.75}
+  .meta{gap:6px;margin-bottom:22px}
+  .pill{padding:7px 10px;font-size:9px}
+  .console{padding:20px 16px}
+  .console-head{font-size:9px}
+  .inputline input{font-size:12px}
+  .stage{min-height:360px}
+  .portal{width:min(340px,100%)}
+  .orbit-label{font-size:8px}
+  .orb-a{right:0}.orb-b{left:0}
+  .rune{font-size:11px}
+  .core-label{font-size:8px;letter-spacing:.2em}
+  .core-small{font-size:6px}
+  .stage-bottom{font-size:9px;bottom:-2px}
+  .file-inner{padding:11px 12px;gap:10px}
+  .file-icon{width:40px;height:40px}
+  .file-text strong{font-size:12px}
+  footer{font-size:9px;flex-wrap:wrap;padding:12px 0;gap:6px}
+  .c-tl,.c-tr,.c-bl,.c-br{display:none}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}}
+</style>
+</head>
+<body>
+
+<!-- Unlock effect layers -->
+<div id="unlock-flash" aria-hidden="true"></div>
+<div id="unlock-sweep" aria-hidden="true"></div>
+<canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+<!-- Toast notification -->
+<div id="toast" role="status" aria-live="polite" aria-atomic="true">
+  <div class="toast-icon">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><polyline points="20 6 9 17 4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+  <div class="toast-body">
+    <div class="toast-title" id="toast-title">VAULT UNSEALED</div>
+    <div class="toast-sub" id="toast-sub">Cipher accepted. 2 items available.</div>
+  </div>
+  <button class="toast-close" id="toast-close" aria-label="Dismiss notification">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <div class="toast-bar"><div class="toast-bar-fill" id="toast-bar-fill"></div></div>
+</div>
+
+<!-- Corner UI decorations -->
+<div class="corner c-tl" aria-hidden="true"></div>
+<div class="corner c-tr" aria-hidden="true"></div>
+<div class="corner c-bl" aria-hidden="true"></div>
+<div class="corner c-br" aria-hidden="true"></div>
+
+<div class="world" aria-hidden="true"></div>
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div class="scanlines" aria-hidden="true"></div>
+
+<div class="wrap">
+<header>
+  <a class="brand" href="./" aria-label="K DEBET - Trang chủ">
+    <span class="mark" aria-hidden="true">
+      <!-- Weapon/key icon -->
+      <svg viewBox="0 0 32 32" fill="none" stroke="#e8b84b" stroke-width="1.5">
+        <circle cx="12" cy="14" r="6" stroke-width="1.4"/>
+        <path d="M16.5 18.5 L28 29" stroke-linecap="round"/>
+        <path d="M22 25l3-3M25 22l3-3" stroke-linecap="round"/>
+        <circle cx="12" cy="14" r="2.5" fill="#e8b84b" fill-opacity=".35"/>
+      </svg>
+    </span>
+    <span class="brand-names">
+      <span class="brand-name glitch" data-text="K DEBET">K DEBET</span>
+      <span class="brand-sub">ENCRYPTED VAULT · CASE ARCHIVE</span>
+    </span>
+  </a>
+  <div class="head-right">
+    <span class="hide-sm">SECTOR 07 / CLASSIFIED</span>
+    <span class="online"><i class="led"></i><b id="top-status">VAULT LOCKED</b></span>
+  </div>
+</header>
+
+<main>
+<section class="copy" aria-label="Access portal">
+  <p class="eyebrow" id="eyebrow">
+    <span class="eyebrow-badge">◈ CASE ARCHIVE</span>
+    K DEBET / ACCESS PROTOCOL / 001
+  </p>
+
+  <h1>
+    <span class="light">K</span>
+    <span class="accent glitch" data-text="DEBET.">DEBET.</span>
+  </h1>
+
+  <!-- Rarity bar like CS:GO -->
+  <div class="rarity-bar" aria-hidden="true">
+    <span class="rb-common"></span>
+    <span class="rb-uncommon"></span>
+    <span class="rb-rare"></span>
+    <span class="rb-epic"></span>
+    <span class="rb-legendary"></span>
+  </div>
+
+  <p class="intro">
+    Hai vật phẩm số đang nằm trong <strong>kho mã hóa</strong>. Chỉ người cầm đúng
+    <strong>cipher key</strong> mới có thể mở khóa và tải về tệp Cisco Packet Tracer.
+  </p>
+
+  <div class="meta">
+    <span class="pill" data-tip="2 encrypted files"><span class="glyph">◈</span>02 ITEMS</span>
+    <span class="pill" data-tip="Browser-side only"><span class="glyph">⚿</span>AES-256-GCM</span>
+    <span class="pill" data-tip="Highest rarity tier"><span class="glyph">★</span>COVERT GRADE</span>
+    <span class="pill" data-tip="Key never sent to server"><span class="glyph">✦</span>PRIVATE CIPHER</span>
+  </div>
+
+  <!-- CONSOLE PANEL -->
+  <div class="console" id="console">
+    <span class="console-condition">FACTORY NEW</span>
+
+    <!-- AUTH FORM -->
+    <form id="access-form" autocomplete="off" novalidate>
+      <div class="console-head">
+        <span>⟡ &nbsp; PHASE 01 — AUTHENTICATE</span>
+        <span class="stamp">[ LOCKED ]</span>
+      </div>
+      <label for="secret">NHẬP CIPHER KEY ĐỂ MỞ VAULT</label>
+      <div class="inputline">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></svg>
+        <input id="secret" type="text" placeholder="XXXX-XXXX-XXXX-XXXX"
+          autocomplete="off" autocapitalize="characters" spellcheck="false"
+          maxlength="40" aria-describedby="hint error-msg" required>
+      </div>
+      <button class="auth-btn" id="unlock-btn" type="submit" data-tip="ENTER to submit">
+        <span class="btn-txt" id="unlock-label">MỞ VAULT</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16m-7-7 7 7-7 7"/></svg>
+      </button>
+      <p class="message" id="error-msg" role="status" aria-live="polite"></p>
+      <p class="kbd-hint" aria-hidden="true"><span class="kbd">ENTER</span> to unlock &nbsp;·&nbsp; <span class="kbd">ESC</span> to clear</p>
+      <p class="console-foot" id="hint">
+        <span class="lock">⚿</span> Mật mã xác minh cục bộ. Không gửi server.
+      </p>
+    </form>
+
+    <!-- VAULT (UNLOCKED) -->
+    <div id="vault" hidden>
+      <div class="console-head">
+        <span style="color:var(--green2)">✦ &nbsp; PHASE 02 — VAULT UNSEALED</span>
+        <span class="stamp" style="color:var(--green)">[ GRANTED ]</span>
+      </div>
+      <div class="vault-header">
+        <h2 class="vault-title">VAULT OPENED.</h2>
+        <p class="vault-caption">SELECT ITEM → DECRYPT → DOWNLOAD</p>
+      </div>
+      <div class="file-list">
+
+        <button class="file-card" type="button" data-file="Cau1.pkt">
+          <div class="file-inner">
+            <span class="file-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#4bda96" stroke-width="1.5" aria-hidden="true">
+                <path d="M7 2h7l5 5v15H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"/>
+                <path d="M14 2v6h6M9 13h7m-7 4h6"/>
+              </svg>
+            </span>
+            <span class="file-text">
+              <strong>Cau1.pkt</strong>
+              <small>ITEM 01 &nbsp;·&nbsp; CISCO PACKET TRACER &nbsp;·&nbsp; <span class="file-rarity">COVERT</span></small>
+            </span>
+            <svg class="file-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v13m-5-5 5 5 5-5M5 20h14"/></svg>
+          </div>
+        </button>
+
+        <button class="file-card" type="button" data-file="Cau2.pkt">
+          <div class="file-inner">
+            <span class="file-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#4bda96" stroke-width="1.5" aria-hidden="true">
+                <path d="M7 2h7l5 5v15H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"/>
+                <path d="M14 2v6h6M9 13h7m-7 4h6"/>
+              </svg>
+            </span>
+            <span class="file-text">
+              <strong>Cau2.pkt</strong>
+              <small>ITEM 02 &nbsp;·&nbsp; CISCO PACKET TRACER &nbsp;·&nbsp; <span class="file-rarity">COVERT</span></small>
+            </span>
+            <svg class="file-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v13m-5-5 5 5 5-5M5 20h14"/></svg>
+          </div>
+        </button>
+
+      </div>
+      <div class="dl-bar"><div class="dl-bar-fill" id="dl-bar-fill"></div></div>
+      <p class="ok-message" id="download-msg" role="status" aria-live="polite">✦ &nbsp; VAULT READY — SELECT ITEM TO DOWNLOAD.</p>
+    </div>
+  </div>
+</section>
+
+<!-- STAGE / ITEM DISPLAY -->
+<section class="stage" aria-label="Item showcase portal">
+  <div class="ghost"></div>
+  <div class="column"></div>
+  <div class="cross"></div>
+  <div class="portal" aria-hidden="true">
+    <div class="halo"></div>
+    <div class="halo halo-two"></div>
+    <div class="halo halo-three"></div>
+    <div class="ticks"></div>
+    <div class="arc arc-back"></div>
+    <div class="arc"></div>
+    <div class="crosshair"></div>
+
+    <div class="core">
+      <!-- CS:GO-style weapon silhouette (AK-like) -->
+      <svg class="core-svg" viewBox="0 0 128 128" fill="none" stroke="#e8b84b" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <!-- Key / lock item -->
+        <circle cx="52" cy="52" r="22" stroke-width="1.4"/>
+        <circle cx="52" cy="52" r="12" stroke-width="1" opacity=".6"/>
+        <circle cx="52" cy="52" r="5" fill="#e8b84b" fill-opacity=".4"/>
+        <!-- Key shaft -->
+        <path d="M68 68 L102 102" stroke-width="2.5"/>
+        <!-- Key teeth -->
+        <path d="M82 84 L89 77 M90 92 L97 85" stroke-width="2"/>
+        <!-- Decorative circles -->
+        <circle cx="52" cy="52" r="30" opacity=".2" stroke-dasharray="4 6"/>
+        <circle cx="52" cy="52" r="38" opacity=".1" stroke-dasharray="2 10"/>
+        <!-- Crosshair inside -->
+        <path d="M52 24v18M52 62v18M24 52h18M62 52h18" opacity=".25" stroke-width=".8"/>
+      </svg>
+      <span class="core-label" id="core-label">SEALED</span>
+      <span class="core-small" id="core-small">AWAITING CIPHER</span>
+      <div class="wear-bar" aria-hidden="true">
+        <div class="wear-indicator" id="wear-indicator"></div>
+      </div>
+    </div>
+
+    <span class="rune r1">◈</span>
+    <span class="rune r2">⚿</span>
+    <span class="rune r3">◈</span>
+    <span class="rune r4">★</span>
+  </div>
+
+  <div class="orbit-label orb-a" style="text-align:right">SECURITY FIELD<strong>ENCRYPTED</strong></div>
+  <div class="orbit-label orb-b">ACCESS TIER<strong id="side-state">RESTRICTED</strong></div>
+  <div class="stage-bottom">
+    <span>CIPHER LINK</span>
+    <span class="bars"><i></i><i></i><i></i><i></i><i></i></span>
+    <span id="bottom-status">STANDBY</span>
+  </div>
+</section>
+</main>
+
+<footer>
+  <span>© 2026 K DEBET &nbsp;/&nbsp; VAULT EDITION</span>
+  <span class="footer-right">NO PUBLIC FILES <span class="teal">◈</span> ENCRYPTED AT REST</span>
+</footer>
+</div>
+
+<script>
+'use strict';
+// ============================================================
+// VAULT DATA
+// ============================================================
+const VAULT = {"files":{"Cau1.pkt":{"src":"Cau1.pkt.sealed","iv":"iQ3eWinpJBwTnDwq"},"Cau2.pkt":{"src":"Cau2.pkt.sealed","iv":"0hexPoyLVbBMYQbd"}},"access":{"f60d560f99debac1a1fb49ba8f40bca379a33304db2275ed56d20e7c5cf43345":{"s":"tmyPEfXR2CXOmpLCaozCRA==","i":"zCJ9QDXnVxnr3Cdo","k":"8gta29S11U9pPOLG4qe7rAMNdKVHXnKJXxQ5Mhx3EFjmzFWcmNMXihY8NvTXsRhP"},"72a7658268cecfd12a537fb1d1c1e0ea0c680da53bbe2712f5e80927529c7fce":{"s":"HxZ6/vwSUkxe5eh9KsE8SA==","i":"tB31hsM2N4ziIank","k":"F+wb19i+KmUiMbRZuHcCnLoXPRtseAxaFkYxPKnF4KH69ywoc2gj36SCN8utug75"},"fe62672526cbd2e4777aa14bc5883bbcb9e0c488bc6bb8ab5524399069a96242":{"s":"SV9v30mkPmtONCN6fAm3Dg==","i":"mbytpMXTUDbI7wm0","k":"pohK1tH6eRiLwNQZ5h4rT5Ql0/VIcj7q8mmLruYVFC0kbFOgfbuEe399bWyhzf9X"},"87527209b8e1e048a5808279570f249b4df7c53622adf8ecab3e408934d9f89e":{"s":"pGqmQIqllXUNNQc5GuKOPA==","i":"3KHucJWcQ4iai6sy","k":"qlgg+EAFPxhHN19F3wRdUkt6B8TVZAUk/SoaIGLtK6kWTM17rklUNqSkoGlAFmaf"},"8c21520bfbab3acf8374a003b576e9469957b2952b4471730df85a0c7814cda8":{"s":"diUlu/zCG3Oge91AL8//WQ==","i":"9rtKWsUCY0Or+zX6","k":"fsu+8VfOWjzZBmb7qdg3qxVtQ5IGSyyw2xMBhRmOIQtYU7T8UnUSudv2N631odvL"},"1cc86895475389788b21e9ac7c10356a5c4b2adae6aa0a604ad879f8c3ff99da":{"s":"6hqGiTo/11EcN5K3HBda+g==","i":"CdW1y8SgQnNEa5+Q","k":"g0b+PMYzXg2bhruiVEhhLGJUSnUuf4r5YaMJAOcYwoRrLWfCLcUM2zDunntL0v8M"},"5ef14541525769ca67fc116bd5ef02e081c5564f1ae478e67e12e5e7181ecc44":{"s":"gvs8f22gKq+q/o3eMLfpjA==","i":"H8ejCiaDxOSeVuLC","k":"bLXuw+UE5knMoHgweARfih+Fja9aHkj+rmNMdXGROiniOKEjyamYon2xcILOwLp7"},"6fe8d4856d0ddb7701b37162c83ce2ddc685f44c1bdc357838d1d25db67474c4":{"s":"FB1yRN0bkm+E3xrkLWGsAA==","i":"RfBoJoTvyBJeeyZQ","k":"ShOYCBnTKnpg6hUa+0aFr5H4GDDuP9O4zVYacl1RvtbYuNbXKQNT/NuKyPgegMKu"}}};
+
+// ============================================================
+// DOM REFS
+// ============================================================
+const form        = document.getElementById('access-form');
+const input       = document.getElementById('secret');
+const errorMsg    = document.getElementById('error-msg');
+const unlockBtn   = document.getElementById('unlock-btn');
+const unlockLabel = document.getElementById('unlock-label');
+const dlBarFill   = document.getElementById('dl-bar-fill');
+let contentKey    = null;
+const encoder     = new TextEncoder();
+
+function decode64(d){return Uint8Array.from(atob(d),c=>c.charCodeAt(0));}
+function hex(b){return Array.from(b,x=>x.toString(16).padStart(2,'0')).join('');}
+
+// ============================================================
+// ERROR STATE
+// ============================================================
+function statusError(msg){
+  errorMsg.textContent = msg;
+  const box = document.getElementById('console');
+  box.classList.remove('shake');
+  void box.offsetWidth;
+  box.classList.add('shake');
+  // Red flash on input border
+  const il = document.querySelector('.inputline');
+  il.style.borderColor='var(--red)';
+  il.style.boxShadow='0 0 20px rgba(232,75,75,.2)';
+  setTimeout(()=>{il.style.borderColor='';il.style.boxShadow='';},1800);
+}
+
+// ============================================================
+// CRYPTO HELPERS
+// ============================================================
+async function sha256(v){return hex(new Uint8Array(await crypto.subtle.digest('SHA-256',encoder.encode(v))));}
+
+async function derive(pass, salt){
+  const mat = await crypto.subtle.importKey('raw',encoder.encode(pass),'PBKDF2',false,['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2',salt:decode64(salt),iterations:220000,hash:'SHA-256'},mat,{name:'AES-GCM',length:256},false,['decrypt']);
+}
+
+// ============================================================
+// TOAST SYSTEM
+// ============================================================
+let toastTimer = null;
+function showToast(title, sub, duration=4200){
+  const toast = document.getElementById('toast');
+  const fill  = document.getElementById('toast-bar-fill');
+  document.getElementById('toast-title').textContent = title;
+  document.getElementById('toast-sub').textContent   = sub;
+  if(toastTimer) clearTimeout(toastTimer);
+  toast.classList.remove('hide');
+  toast.classList.add('show');
+  // Progress bar countdown
+  fill.style.transition = 'none';
+  fill.style.width = '100%';
+  void fill.offsetWidth;
+  fill.style.transition = `width ${duration}ms linear`;
+  fill.style.width = '0%';
+  toastTimer = setTimeout(()=>dismissToast(), duration);
+}
+function dismissToast(){
+  const toast = document.getElementById('toast');
+  toast.classList.remove('show');
+  toast.classList.add('hide');
+}
+document.getElementById('toast-close').addEventListener('click', dismissToast);
+
+// ============================================================
+// CONFETTI ENGINE — Gold / Green particles
+// ============================================================
+function fireConfetti(){
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx    = canvas.getContext('2d');
+  if(!ctx) return;
+  canvas.width  = innerWidth;
+  canvas.height = innerHeight;
+  canvas.classList.add('active');
+
+  const COLORS = [
+    'rgba(232,184,75,',   // gold
+    'rgba(255,217,125,',  // gold2
+    'rgba(75,218,150,',   // green
+    'rgba(123,255,190,',  // green2
+    'rgba(232,134,75,',   // orange
+    'rgba(255,255,255,',  // white
+  ];
+  const SHAPES = ['rect','circle','line'];
+  const count  = Math.min(120, Math.floor(innerWidth * innerHeight / 8000));
+
+  const pieces = Array.from({length: count}, ()=>({
+    x: innerWidth * (.2 + Math.random() * .6),
+    y: -20 - Math.random() * 80,
+    vx: (Math.random()-.5)*5,
+    vy: 2 + Math.random()*4,
+    rot: Math.random()*Math.PI*2,
+    rotV: (Math.random()-.5)*.2,
+    size: 4 + Math.random()*8,
+    color: COLORS[Math.floor(Math.random()*COLORS.length)],
+    shape: SHAPES[Math.floor(Math.random()*SHAPES.length)],
+    alpha: 1,
+    decay: .006 + Math.random()*.01,
+    gravity: .12 + Math.random()*.08,
+    drag: .99
+  }));
+
+  let frame;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    let alive = false;
+    for(const p of pieces){
+      if(p.alpha <= 0) continue;
+      alive = true;
+      p.vy  += p.gravity;
+      p.vx  *= p.drag;
+      p.x   += p.vx;
+      p.y   += p.vy;
+      p.rot += p.rotV;
+      if(p.y > canvas.height + 20) p.alpha = 0;
+      p.alpha -= p.decay;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.globalAlpha = Math.max(0,p.alpha);
+      ctx.fillStyle = p.color + Math.max(0,p.alpha) + ')';
+      ctx.strokeStyle = p.color + Math.max(0,p.alpha*.7) + ')';
+      ctx.lineWidth = 1.5;
+      if(p.shape==='rect'){
+        ctx.fillRect(-p.size/2, -p.size*.3, p.size, p.size*.6);
+      } else if(p.shape==='circle'){
+        ctx.beginPath();ctx.arc(0,0,p.size*.4,0,Math.PI*2);ctx.fill();
+      } else {
+        ctx.beginPath();ctx.moveTo(-p.size/2,0);ctx.lineTo(p.size/2,0);ctx.stroke();
+      }
+      ctx.restore();
+    }
+    if(alive){frame=requestAnimationFrame(draw);}
+    else{canvas.classList.remove('active');ctx.clearRect(0,0,canvas.width,canvas.height);}
+  }
+  frame = requestAnimationFrame(draw);
+  setTimeout(()=>{cancelAnimationFrame(frame);canvas.classList.remove('active');ctx.clearRect(0,0,canvas.width,canvas.height);},5000);
+}
+
+// ============================================================
+// UNLOCK FLASH + SWEEP
+// ============================================================
+function playUnlockFX(){
+  const flash = document.getElementById('unlock-flash');
+  const sweep = document.getElementById('unlock-sweep');
+
+  // 1. Instant flash
+  flash.classList.add('fire');
+  setTimeout(()=>{flash.classList.remove('fire');flash.classList.add('fade');},80);
+  setTimeout(()=>flash.classList.remove('fade'),1200);
+
+  // 2. Sweep line
+  sweep.classList.remove('fire');
+  void sweep.offsetWidth;
+  sweep.classList.add('fire');
+  setTimeout(()=>sweep.classList.remove('fire'),900);
+
+  // 3. Confetti
+  setTimeout(()=>fireConfetti(), 150);
+
+  // 4. Core pulse
+  const core = document.querySelector('.core');
+  core.classList.add('unlocking');
+  setTimeout(()=>core.classList.remove('unlocking'),700);
+}
+
+// ============================================================
+// TYPEWRITER FOR VAULT TITLE
+// ============================================================
+function typewriterEl(el, text, speed=55){
+  el.textContent='';
+  el.classList.add('typewriter');
+  let i=0;
+  const t=setInterval(()=>{
+    el.textContent += text[i++];
+    if(i>=text.length){clearInterval(t);el.classList.remove('typewriter');}
+  },speed);
+}
+
+// ============================================================
+// OPEN GATE
+// ============================================================
+function openGate(key){
+  contentKey = key;
+
+  // Play unlock effects BEFORE DOM swap
+  playUnlockFX();
+
+  // Show toast
+  showToast('VAULT UNSEALED ✦','Cipher accepted — 2 items available.', 5000);
+
+  setTimeout(()=>{
+    form.hidden = true;
+    const vault = document.getElementById('vault');
+    vault.hidden = false;
+    vault.classList.add('reveal');
+
+    // Typewriter on vault title
+    const title = vault.querySelector('.vault-title');
+    typewriterEl(title, 'VAULT OPENED.');
+
+    // Stagger file cards
+    const cards = vault.querySelectorAll('.file-card');
+    cards.forEach((c,i)=>{
+      c.style.transitionDelay = (i*120+300)+'ms';
+      requestAnimationFrame(()=>c.classList.add('visible'));
+    });
+  }, 220);
+
+  document.body.classList.add('unlocked');
+  document.getElementById('top-status').textContent    = 'VAULT OPEN';
+  document.getElementById('core-label').textContent    = 'UNSEALED';
+  document.getElementById('core-small').textContent    = 'ITEMS ONLINE';
+  document.getElementById('side-state').textContent    = 'AUTHORIZED';
+  document.getElementById('bottom-status').textContent = 'CONNECTED';
+  document.getElementById('eyebrow').innerHTML         = '<span class="eyebrow-badge" style="color:var(--green);border-color:rgba(75,218,150,.35)">◈ UNLOCKED</span> K DEBET / ACCESS COMPLETE';
+  input.value = '';
+}
+
+// ============================================================
+// FORM SUBMIT
+// ============================================================
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const pass = input.value.trim().toUpperCase()
+    .replace(/[\u2012\u2013\u2014]/g,'-').replace(/\s+/g,'');
+  if(!pass){statusError('HÃY NHẬP CIPHER KEY.');input.focus();return;}
+  if(!window.isSecureContext||!window.crypto?.subtle){
+    statusError('CẦN HTTPS: Mở trên Vercel, GitHub Pages hoặc localhost.');return;
+  }
+  errorMsg.textContent='';
+  unlockBtn.disabled=true;
+  unlockBtn.classList.add('loading');
+  unlockLabel.textContent='VERIFYING';
+  try{
+    const hash     = await sha256(pass);
+    const envelope = VAULT.access[hash];
+    if(!envelope){statusError('CIPHER KHÔNG HỢP LỆ. TRUY CẬP BỊ TỪ CHỐI.');return;}
+    const kek = await derive(pass, envelope.s);
+    const raw = await crypto.subtle.decrypt({name:'AES-GCM',iv:decode64(envelope.i)},kek,decode64(envelope.k));
+    const key = await crypto.subtle.importKey('raw',raw,{name:'AES-GCM'},false,['decrypt']);
+    openGate(key);
+  }catch(err){
+    statusError('KHÔNG THỂ GIẢI MÃ. KIỂM TRA LẠI CIPHER KEY.');
+    console.error('Decryption error',err);
+  }finally{
+    unlockBtn.disabled=false;
+    unlockBtn.classList.remove('loading');
+    unlockLabel.textContent='MỞ VAULT';
+  }
+});
+
+// ESC to clear input
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape' && document.activeElement===input){input.value='';errorMsg.textContent='';}
+});
+
+// ============================================================
+// FILE DOWNLOAD
+// ============================================================
+for(const btn of document.querySelectorAll('[data-file]')){
+  btn.addEventListener('click', async () => {
+    const name   = btn.dataset.file;
+    const meta   = VAULT.files[name];
+    const msg    = document.getElementById('download-msg');
+    if(!contentKey||!meta){msg.textContent='VAULT CHƯA ĐƯỢC MỞ.';return;}
+    const small  = btn.querySelector('.file-text small');
+    const orig   = small.textContent;
+    btn.disabled = true;
+    small.textContent = 'DECRYPTING...';
+    msg.textContent   = '◈  ĐANG GIẢI MÃ VẬT PHẨM...';
+    if(dlBarFill){dlBarFill.style.width='0%';}
+    try{
+      let prog = 0;
+      const progInt = setInterval(()=>{prog=Math.min(prog+Math.random()*12,88);if(dlBarFill)dlBarFill.style.width=prog+'%';},180);
+      const resp = await fetch('./'+encodeURIComponent(meta.src),{cache:'no-store'});
+      clearInterval(progInt);
+      if(!resp.ok) throw Error('HTTP '+resp.status);
+      if(dlBarFill)dlBarFill.style.width='92%';
+      const encrypted = await resp.arrayBuffer();
+      const bytes = await crypto.subtle.decrypt(
+        {name:'AES-GCM',iv:decode64(meta.iv),additionalData:encoder.encode(name)},
+        contentKey, encrypted
+      );
+      if(dlBarFill)dlBarFill.style.width='100%';
+      const blob  = new Blob([bytes],{type:'application/octet-stream'});
+      const url   = URL.createObjectURL(blob);
+      const a     = document.createElement('a');
+      a.href=url; a.download=name; a.style.display='none';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),30000);
+      msg.textContent = '✦  '+name.toUpperCase()+' — DECRYPTED & DOWNLOADED.';
+      // Mini confetti on download success
+      showToast('DOWNLOAD COMPLETE','✦ '+name+' has been decrypted and saved.', 3500);
+      // small burst confetti
+      setTimeout(()=>{
+        const c2=document.getElementById('confetti-canvas');
+        const ctx2=c2.getContext('2d');
+        c2.width=innerWidth;c2.height=innerHeight;
+        c2.classList.add('active');
+        const btn2rect=btn.getBoundingClientRect();
+        // 20 quick particles from button
+        const pts=Array.from({length:30},()=>({
+          x:btn2rect.left+btn2rect.width/2,y:btn2rect.top+btn2rect.height/2,
+          vx:(Math.random()-.5)*10,vy:-Math.random()*8-2,
+          alpha:1,decay:.03,size:3+Math.random()*5,
+          color:Math.random()>.5?'rgba(75,218,150,':'rgba(123,255,190,',
+          rot:Math.random()*Math.PI*2,rotV:(Math.random()-.5)*.3,
+          gravity:.3,drag:.96,shape:Math.random()>.5?'rect':'circle'
+        }));
+        let rf;
+        function dMini(){
+          ctx2.clearRect(0,0,c2.width,c2.height);
+          let al=false;
+          for(const p of pts){
+            if(p.alpha<=0)continue;al=true;
+            p.vy+=p.gravity;p.vx*=p.drag;p.x+=p.vx;p.y+=p.vy;p.rot+=p.rotV;p.alpha-=p.decay;
+            ctx2.save();ctx2.translate(p.x,p.y);ctx2.rotate(p.rot);ctx2.globalAlpha=Math.max(0,p.alpha);
+            ctx2.fillStyle=p.color+Math.max(0,p.alpha)+')';
+            if(p.shape==='rect'){ctx2.fillRect(-p.size/2,-p.size*.3,p.size,p.size*.6);}
+            else{ctx2.beginPath();ctx2.arc(0,0,p.size*.4,0,Math.PI*2);ctx2.fill();}
+            ctx2.restore();
+          }
+          if(al)rf=requestAnimationFrame(dMini);
+          else{c2.classList.remove('active');ctx2.clearRect(0,0,c2.width,c2.height);}
+        }
+        rf=requestAnimationFrame(dMini);
+      },100);
+    }catch(err){
+      console.error('Download failed',err);
+      if(dlBarFill)dlBarFill.style.width='0%';
+      msg.textContent = 'DOWNLOAD FAILED. KIỂM TRA KẾT NỐI VÀ TỆP .SEALED TRÊN HOST.';
+    }finally{
+      btn.disabled=false;
+      small.textContent=orig;
+    }
+  });
+}
+
+// ============================================================
+// STARFIELD — golden dust particles
+// ============================================================
+(()=>{
+  const c   = document.getElementById('starfield');
+  const ctx = c.getContext('2d');
+  if(!ctx) return;
+  const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+  let w=0,h=0,dpr=1,particles=[],last=0;
+
+  function resize(){
+    dpr=Math.min(devicePixelRatio||1,2);
+    w=innerWidth; h=innerHeight;
+    c.width=Math.round(w*dpr); c.height=Math.round(h*dpr);
+    c.style.width=w+'px'; c.style.height=h+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const count = Math.min(w<600?60:140, Math.floor(w*h/5500));
+    particles = Array.from({length:count},()=>({
+      x:Math.random()*w, y:Math.random()*h,
+      r:Math.random()*1.1+.15,
+      v:Math.random()*.16+.03,
+      a:Math.random()*.28+.06,
+      phase:Math.random()*6.28,
+      gold:Math.random()>.65
+    }));
+  }
+
+  function draw(t){
+    if(document.hidden){requestAnimationFrame(draw);return;}
+    const dt=Math.min((t-last)||16,50);last=t;
+    ctx.clearRect(0,0,w,h);
+    for(const p of particles){
+      if(!reduce){p.y-=p.v*dt*.065;if(p.y<0){p.y=h;p.x=Math.random()*w;}}
+      const alpha=p.a*(.7+.3*Math.sin(t*.0009+p.phase));
+      ctx.beginPath();
+      ctx.fillStyle=p.gold
+        ?`rgba(232,184,75,${alpha})`
+        :`rgba(230,220,200,${alpha*0.6})`;
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fill();
+    }
+    if(!reduce) requestAnimationFrame(draw);
+  }
+  resize();
+  addEventListener('resize',resize,{passive:true});
+  requestAnimationFrame(draw);
+
+  // Parallax on mouse
+  const stage=document.querySelector('.stage');
+  if(!reduce&&matchMedia('(pointer:fine)').matches){
+    addEventListener('pointermove',e=>{
+      const x=(e.clientX/innerWidth-.5)*20;
+      const y=(e.clientY/innerHeight-.5)*20;
+      stage.style.setProperty('--x',x+'px');
+      stage.style.setProperty('--y',y+'px');
+    },{passive:true});
+  }
+})();
+</script>
+</body>
+</html>
